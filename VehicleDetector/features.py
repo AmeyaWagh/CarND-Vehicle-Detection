@@ -47,5 +47,9 @@ class FeatureDetector(object):
 							visualise=True)
 		return HOG_feature,img_hog
 
-	def normalize_features(self):
-		pass
+	def get_heatmap(self,image,bboxes,threshold=1):
+		heat_map = np.zeros((image.shape[0],image.shape[1]))
+		for bbox in bboxes:
+			heat_map[bbox[0][1]:bbox[1][1], bbox[0][0]:bbox[1][0]]+=1
+		heat_map[heat_map <= threshold] = 0
+		return heat_map

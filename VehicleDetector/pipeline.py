@@ -5,6 +5,7 @@ from VehicleDetector import visualizer
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.ndimage.measurements import label
 
 
 class VehicleDetector(object):
@@ -21,6 +22,8 @@ class VehicleDetector(object):
         self.clf = classifier.Classifier()
         self.viz = visualizer.Visualizer()
         self.clf.load_classifier()
+
+        self.probability_threshold = 0.5
 
     def prepare_dataset(self):
         """
@@ -153,18 +156,31 @@ class VehicleDetector(object):
                 except cv2.error as e:
                     # print(e)
                     pass
-        print(len(all_X))
+        # print(len(all_X))
         features = np.vstack(all_X).astype(np.float64)
         features = self.data_h.scale_vector(features)
         pred_proba = self.clf.predict(features)
-        print(len(cells))
+        # print(len(cells))
+        final_bbox = []
         for i,_pred in enumerate(pred_proba):
-            if _pred[1] > 0.5:
-                print(pred_proba[i])
+            if _pred[1] > self.probability_threshold:
+                # print(pred_proba[i])
                 viz_image = self.viz.draw_bounding_box(viz_image,[cells[i]],color=self.viz.GREEN)
+                final_bbox.append(cells[i])
 
-        plt.imshow(viz_image)
-        plt.show()
+        # plt.imshow(viz_image)
+        # plt.figure()
+        heat_map = self.feat.get_heatmap(image, final_bbox)
+        labels = label(heat_map)
+        # plt.imshow(heat_map)
+        # plt.figure()
+        # plt.imshow(labels[0], cmap='gray')
+        final_img = self.viz.draw_labeled_bounding_box(image,labels)
+        # plt.figure()
+        # plt.imshow(final_img)
+        # print(labels)
+        # plt.show()
+        return final_img
 
 
 

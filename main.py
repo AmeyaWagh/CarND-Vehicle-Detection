@@ -37,34 +37,16 @@ def test_windows():
 		for idx,window in enumerate(windows):
 			processed_img = viz.draw_bounding_box(processed_img,window,color=viz.COLORS[idx])
 
-			# plt.figure()
-			# plt.imshow(img)
 		plt.imshow(processed_img)
 		plt.show()
 		# break
 def test_car_detection():
-	img = cv2.imread(data_h.test_images[2])
-	vehicle_detector.process_image(img)
-	# process_image = np.copy(img)
-	# viz_image = np.copy(img)
-	# plt.figure()
-	# windows = vehicle_detector.get_windows(img)
-	# # print(windows[0][0])
-	# for window in windows:
-	# 	for cell in window:
-	# 		print(cell)
-	# 		image_roi = process_image[cell[0][0]:cell[0][1],cell[1][0]:cell[1][1]]
-	# 		image_roi = cv2.resize(image_roi, (32,32))
-	# 		X = feat.get_features(image_roi)
-	# 		plt.plot(X)
-	# 		viz_image = viz.draw_bounding_box(viz_image,[cell],color=viz.GREEN)
-	# 		# plt.imshow(image_roi)
-	# 		plt.show()
-	# 		break
+	for img_file in data_h.test_images:
+		img = cv2.imread(img_file)
+		final_img = vehicle_detector.process_image(img)		
 
-		
-	# plt.imshow(viz_image)
-	# plt.show()
+		plt.imshow(final_img)
+		plt.show()
 
 def train_pipeline():
 	vehicle_detector.prepare_dataset()
