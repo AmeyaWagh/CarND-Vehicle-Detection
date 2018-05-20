@@ -1,1 +1,6 @@
 *.pyc
+non-vehicles.zip
+non-vehicles/
+vehicles.zip
+vehicles/
+*.pkl
