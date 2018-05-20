@@ -1,6 +1,7 @@
 import glob
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+import pickle
 
 
 class DataHandler(object):
@@ -10,6 +11,7 @@ class DataHandler(object):
 
     def __init__(self, BASE_PATH="."):
         self.BASE_PATH = BASE_PATH
+        self.X_scaler = pickle.load(open('X_scaler.pkl', 'rb'))
 
     def load_data(self):
         self.test_images = glob.glob("./test_images/*.jpg")
@@ -23,8 +25,16 @@ class DataHandler(object):
     def prepare_trainable_data(self, _features, labels):
         X_scaler = StandardScaler().fit(_features)
         scaled_X = X_scaler.transform(_features)
+
+        pickle.dump(X_scaler, open('X_scaler.pkl', 'wb'))
+
         X_train, X_test, y_train, y_test = train_test_split(scaled_X, labels,
                                                             test_size=0.2)
         print('[Training data]{} [Training labels]{}'.format(X_train.shape, y_train.shape))
         print('[Test data]{} [Test labels]{}'.format(X_test.shape, y_test.shape))
         return (X_train, X_test, y_train, y_test)
+
+    def scale_vector(self,vector):
+        # self.X_scaler = StandardScaler().fit(vector)
+        return self.X_scaler.transform(vector)
+

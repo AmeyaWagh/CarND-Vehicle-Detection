@@ -1,8 +1,10 @@
 from VehicleDetector import classifier
 from VehicleDetector import features
 from VehicleDetector import data_handler
+from VehicleDetector import visualizer
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class VehicleDetector(object):
@@ -17,6 +19,8 @@ class VehicleDetector(object):
         self.data_h.load_data()
         self.feat = features.FeatureDetector()
         self.clf = classifier.Classifier()
+        self.viz = visualizer.Visualizer()
+        self.clf.load_classifier()
 
     def prepare_dataset(self):
         """
@@ -55,8 +59,115 @@ class VehicleDetector(object):
         self.clf.train(X_train, y_train, X_test, y_test)
 
 
-    def process_image(self):
-        pass
+    def slide_window(self,img, x_start_stop=[None, None], y_start_stop=[None, None], 
+                        xy_window=(32, 32), xy_overlap=(0.5, 0.5)):
+        """
+            code used from lessons
+        """
+        # If x and/or y start/stop positions not defined, set to image size
+        if x_start_stop[0] == None:
+            x_start_stop[0] = 0
+        if x_start_stop[1] == None:
+            x_start_stop[1] = img.shape[1]
+        if y_start_stop[0] == None:
+            y_start_stop[0] = 0
+        if y_start_stop[1] == None:
+            y_start_stop[1] = img.shape[0]
+        # Compute the span of the region to be searched    
+        xspan = x_start_stop[1] - x_start_stop[0]
+        yspan = y_start_stop[1] - y_start_stop[0]
+        # Compute the number of pixels per step in x/y
+        nx_pix_per_step = np.int(xy_window[0]*(1 - xy_overlap[0]))
+        ny_pix_per_step = np.int(xy_window[1]*(1 - xy_overlap[1]))
+        # Compute the number of windows in x/y
+        nx_buffer = np.int(xy_window[0]*(xy_overlap[0]))
+        ny_buffer = np.int(xy_window[1]*(xy_overlap[1]))
+        nx_windows = np.int((xspan-nx_buffer)/nx_pix_per_step) 
+        ny_windows = np.int((yspan-ny_buffer)/ny_pix_per_step) 
+        # Initialize a list to append window positions to
+        window_list = []
+        # Loop through finding x and y window positions
+        # Note: you could vectorize this step, but in practice
+        # you'll be considering windows one by one with your
+        # classifier, so looping makes sense
+        for ys in range(ny_windows):
+            for xs in range(nx_windows):
+                # Calculate window position
+                startx = xs*nx_pix_per_step + x_start_stop[0]
+                endx = startx + xy_window[0]
+                starty = ys*ny_pix_per_step + y_start_stop[0]
+                endy = starty + xy_window[1]
+                # Append window position to list
+                window_list.append(((startx, starty), (endx, endy)))
+        # Return the list of windows
+        return window_list
+
+    def get_windows(self,image):
+        window_image = np.copy(image)
+
+        height, width,_ = window_image.shape
+
+        # print(width,height)
+        scale_factors = [(0.2,1.0,0.55,0.8,64),
+                        (0.2,1.0,0.55,0.8,100),
+                        (0.2,1.0,0.55,0.9,120),
+                        (0.2,1.0,0.55,0.9,140),
+                        (0.2,1.0,0.55,0.9,160),
+                        (0.05,1.0,0.50,0.9,180)]
+
+        windows = list()
+        for scale_factor in scale_factors:
+            window_1 = self.slide_window(window_image,
+                            x_start_stop=[int(scale_factor[0]*width), 
+                                            int(scale_factor[1]*width)], 
+                            y_start_stop=[int(scale_factor[2]*height), 
+                                            int(scale_factor[3]*height)],
+                            
+                            xy_window=( scale_factor[4], 
+                                        scale_factor[4]), 
+                            xy_overlap=(0.5, 0.5))
+            windows.append(window_1)
+        
+
+        return windows
+
+    def process_image(self,image):
+        process_image = np.copy(image)
+        viz_image = np.copy(image)
+        plt.figure()
+        windows = self.get_windows(image)
+        # print(windows[0][0])
+
+        cells = []
+        all_X = []
+        for window in windows:
+            for cell in window:
+                try:
+                    image_roi = process_image[cell[0][1]:cell[1][1], cell[0][0]:cell[1][0]]
+                    
+                    if sum(image_roi.shape)-sum((32,32,3)) > 0:
+                        X = self.feat.get_features(image_roi)
+                        all_X.append(X)
+                        cells.append(cell)
+                        
+                except cv2.error as e:
+                    # print(e)
+                    pass
+        print(len(all_X))
+        features = np.vstack(all_X).astype(np.float64)
+        features = self.data_h.scale_vector(features)
+        pred_proba = self.clf.predict(features)
+        print(len(cells))
+        for i,_pred in enumerate(pred_proba):
+            if _pred[1] > 0.5:
+                print(pred_proba[i])
+                viz_image = self.viz.draw_bounding_box(viz_image,[cells[i]],color=self.viz.GREEN)
+
+        plt.imshow(viz_image)
+        plt.show()
+
+
+
 
 
 def printProgressBar(iteration, total, prefix='', suffix='',

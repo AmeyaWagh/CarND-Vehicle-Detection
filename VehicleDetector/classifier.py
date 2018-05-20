@@ -11,8 +11,10 @@ class Classifier(object):
 		print("[accuracy] {}".format(self.clf.score(X_test,y_test)))
 		self.save_classifier()
 	
-	def predict(self):
-		pass
+	def predict(self,inputX):
+		# pred = self.clf.predict(inputX)
+		pred_proba = self.clf.predict_proba(inputX)
+		return pred_proba
 
 	def save_classifier(self):
 		pickle.dump(self.clf, open('svm_model.pkl', 'wb'))

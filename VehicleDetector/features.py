@@ -11,10 +11,12 @@ class FeatureDetector(object):
 		self.pixels_per_cell = (12,12)
 		self.cells_per_block = (2,2)
 		self.image_size = (32,32)
+		self.rgb_image_size = (32,32,3)
 		self.no_of_bins = 32
 
 	def get_features(self,image):
 		_image = np.copy(image)
+		_image = cv2.resize(_image, self.image_size)
 		_image = self.convert_color_space(_image)
 		color_hist = self.get_color_features(_image)
 		spatial_hist = self.get_spatial_features(_image)
