@@ -1,7 +1,7 @@
-## Writeup Template
+<!-- ## Writeup Template
 ### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
 
----
+
 
 **Vehicle Detection Project**
 
@@ -26,19 +26,19 @@ The goals / steps of this project are the following:
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
-
+ -->
 ---
 ### Writeup / README
 
-#### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.  
+<!-- #### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.   -->
 
-You're reading it!
+<!-- You're reading it! -->
 
 ### Histogram of Oriented Gradients (HOG)
 
 #### 1. Explain how (and identify where in your code) you extracted HOG features from the training images.
 
-The code for this step is contained in the first code cell of the IPython notebook (or in lines # through # of the file called `some_file.py`).  
+<!-- The code for this step is contained in the first code cell of the IPython notebook (or in lines # through # of the file called `some_file.py`).  
 
 I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
 
@@ -46,32 +46,82 @@ I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an 
 
 I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like.
 
-Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
+Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`: -->
 
 
-![alt text][image2]
+| CAR             |  NON-CAR |
+|:-------------------------:|:-------------------------:|
+| <img src=./vehicles/GTI_Far/image0000.png width="200" height="200"> | <img src=./non-vehicles/GTI/image1000.png width="200" height="200"> |
+| <img src=./vehicles/GTI_Far/image0001.png width="200" height="200"> | <img src=./non-vehicles/GTI/image1001.png width="200" height="200"> |
+| <img src=./vehicles/GTI_Far/image0002.png width="200" height="200"> | <img src=./non-vehicles/GTI/image1002.png width="200" height="200"> |
+| <img src=./vehicles/GTI_Far/image0003.png width="200" height="200"> | <img src=./non-vehicles/GTI/image1003.png width="200" height="200"> |
+| <img src=./vehicles/GTI_Far/image0004.png width="200" height="200"> | <img src=./non-vehicles/GTI/image1004.png width="200" height="200"> |
+
+
+<img src=./assets/car.png width="400" height="300">
+<img src=./assets/changed_color_space.png width="400" height="300">
+<!-- ![alt text][image2] -->
 
 #### 2. Explain how you settled on your final choice of HOG parameters.
 
-I tried various combinations of parameters and...
+The parameter of HOG were finalized using trial and error method
+```python
+self.color_space = cv2.COLOR_RGB2HSV
+self.orientations = 8
+self.pixels_per_cell = (12,12)
+self.cells_per_block = (2,2)
+self.image_size = (32,32)
+self.rgb_image_size = (32,32,3)
+self.no_of_bins = 32
+```
 
 #### 3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
 I trained a linear SVM using...
+<img src=./assets/feature_vect.png width="300" height="300">
+
 
 ### Sliding Window Search
 
 #### 1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
-I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
+<!-- I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
 
-![alt text][image3]
+![alt text][image3] -->
+```python
+scale_factors = [(0.2,1.0,0.55,0.8,64),
+                (0.2,1.0,0.55,0.8,100),
+                (0.2,1.0,0.55,0.9,120),
+                (0.2,1.0,0.55,0.9,140),
+                (0.2,1.0,0.55,0.9,160),
+                (0.05,1.0,0.50,0.9,180)]
+```
+
+```python
+window_1 = self.slide_window(window_image,
+                            x_start_stop=[int(scale_factor[0]*width), 
+                                            int(scale_factor[1]*width)], 
+                            y_start_stop=[int(scale_factor[2]*height), 
+                                            int(scale_factor[3]*height)],
+                            
+                            xy_window=( scale_factor[4], 
+                                        scale_factor[4]), 
+                            xy_overlap=(0.5, 0.5))
+```
+
+<img src=./assets/window_1.png width="800" height="500">
+<img src=./assets/window_2.png width="800" height="500">
+<img src=./assets/window_3.png width="800" height="500">
+
+
 
 #### 2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
-Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
+<!-- Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
 
-![alt text][image4]
+![alt text][image4] -->
+
+<img src=./assets/cars_det.png width="900" height="600">
 ---
 
 ### Video Implementation
@@ -88,13 +138,17 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 ### Here are six frames and their corresponding heatmaps:
 
-![alt text][image5]
+<!-- ![alt text][image5] -->
+<img src=./assets/cars_det.png width="900" height="600">
+<img src=./assets/cars_heatmap.png width="900" height="600">
 
 ### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
-![alt text][image6]
+<!-- ![alt text][image6] -->
+<img src=./assets/labels.png width="900" height="600">
 
 ### Here the resulting bounding boxes are drawn onto the last frame in the series:
-![alt text][image7]
+<!-- ![alt text][image7] -->
+<img src=./assets/final_car.png width="900" height="600">
 
 
 
@@ -104,5 +158,5 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+This implementation is very slow and requires a lot of parameter tuning. A deep learning approach would be faster and more robust as forward pass in architectures like faster RCNN and YOLO is in microseconds. There would be no need to choose features manually. The outliers in the deep learning approach can also be removed by non-maximal suppression,   
 

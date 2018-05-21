@@ -6,8 +6,12 @@ import glob
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from moviepy.editor import VideoFileClip
 
 BASE_PATH = '.'
+
+OUTPUT_FILE = 'project_output.mp4'
+INPUT_FILE = 'project_video.mp4'
 
 vehicle_detector = pipeline.VehicleDetector(BASE_PATH = BASE_PATH)
 data_h = data_handler.DataHandler(BASE_PATH)
@@ -56,7 +60,12 @@ def unit_tests():
 	# test_windows()
 	test_car_detection()
 
+def process_video():
+	video = VideoFileClip(INPUT_FILE)
+	processed_video = video.fl_image(vehicle_detector.process_image)
+	processed_video.write_videofile(OUTPUT_FILE, audio=False)
 
 if __name__ == '__main__':
-	unit_tests()
+	# unit_tests()
 	# train_pipeline()
+	process_video()
