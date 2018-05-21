@@ -30,7 +30,9 @@ class Visualizer(object):
             # Define a bounding box based on min/max x and y
             bbox = ((np.min(nonzerox), np.min(nonzeroy)), (np.max(nonzerox), np.max(nonzeroy)))
             # Draw the box on the image
-            cv2.rectangle(image, bbox[0], bbox[1], self.GREEN, self.line_thickness+5)
+            height, width,_ = image.shape
+            if (bbox[0][0]>0.45*width) and (bbox[0][1]>0.45*height):
+                cv2.rectangle(image, bbox[0], bbox[1], self.GREEN, self.line_thickness+5)
             # Return the image
         return image
 

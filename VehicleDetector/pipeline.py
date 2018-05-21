@@ -111,12 +111,12 @@ class VehicleDetector(object):
         height, width,_ = window_image.shape
 
         # print(width,height)
-        scale_factors = [(0.2,1.0,0.55,0.8,64),
+        scale_factors = [(0.4,1.0,0.55,0.8,64),
                         (0.2,1.0,0.55,0.8,100),
-                        (0.2,1.0,0.55,0.9,120),
+                        (0.4,1.0,0.55,0.9,120),
                         (0.2,1.0,0.55,0.9,140),
-                        (0.2,1.0,0.55,0.9,160),
-                        (0.05,1.0,0.50,0.9,180)]
+                        (0.4,1.0,0.55,0.9,160),
+                        (0.3,1.0,0.50,0.9,180)]
 
         windows = list()
         for scale_factor in scale_factors:
@@ -157,9 +157,11 @@ class VehicleDetector(object):
                     # print(e)
                     pass
         # print(len(all_X))
+        # print('-'*80)
         features = np.vstack(all_X).astype(np.float64)
         features = self.data_h.scale_vector(features)
         pred_proba = self.clf.predict(features)
+        # print('-'*80)           
         # print(len(cells))
         final_bbox = []
         for i,_pred in enumerate(pred_proba):

@@ -77,6 +77,12 @@ self.no_of_bins = 32
 
 #### 3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
+```
+[LibSVM][accuracy] 0.9921171171171171
+[INFO] classifier saved
+
+```
+
 I trained a linear SVM using...
 <img src=./assets/feature_vect.png width="300" height="300">
 
@@ -121,7 +127,7 @@ window_1 = self.slide_window(window_image,
 
 ![alt text][image4] -->
 
-<img src=./assets/cars_det.png width="900" height="600">
+<img src=./assets/multiple_detected_boxes.png width="1200" height="600">
 ---
 
 ### Video Implementation
@@ -139,7 +145,8 @@ Here's an example result showing the heatmap from a series of frames of video, t
 ### Here are six frames and their corresponding heatmaps:
 
 <!-- ![alt text][image5] -->
-<img src=./assets/cars_det.png width="900" height="600">
+<!-- <img src=./assets/cars_det.png width="900" height="600"> -->
+<img src=./assets/multiple_detected_boxes.png width="1200" height="600">
 <img src=./assets/cars_heatmap.png width="900" height="600">
 
 ### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:

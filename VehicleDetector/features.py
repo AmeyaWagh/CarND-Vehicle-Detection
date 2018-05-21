@@ -6,11 +6,12 @@ from skimage.feature import hog
 
 class FeatureDetector(object):
 	def __init__(self):
-		self.color_space = cv2.COLOR_RGB2HSV
-		self.orientations = 8
+		self.color_space = cv2.COLOR_RGB2YCrCb
+		self.orientations = 9
 		self.pixels_per_cell = (12,12)
 		self.cells_per_block = (2,2)
 		self.image_size = (32,32)
+		self.color_feat_size = (32,32)
 		self.rgb_image_size = (32,32,3)
 		self.no_of_bins = 32
 
@@ -34,9 +35,9 @@ class FeatureDetector(object):
 		return np.concatenate((ch1_hist[0], ch2_hist[0], ch3_hist[0]))
 	
 	def get_color_features(self,image):
-		ch1_featr = cv2.resize(image[:,:,0], self.image_size).ravel()
-		ch2_featr = cv2.resize(image[:,:,1], self.image_size).ravel()
-		ch3_featr = cv2.resize(image[:,:,2], self.image_size).ravel()
+		ch1_featr = cv2.resize(image[:,:,0], self.color_feat_size).ravel()
+		ch2_featr = cv2.resize(image[:,:,1], self.color_feat_size).ravel()
+		ch3_featr = cv2.resize(image[:,:,2], self.color_feat_size).ravel()
 		return np.hstack((ch1_featr, ch2_featr, ch3_featr))
 
 	def get_HOG(self,image):
@@ -47,7 +48,7 @@ class FeatureDetector(object):
 							visualise=True)
 		return HOG_feature,img_hog
 
-	def get_heatmap(self,image,bboxes,threshold=1):
+	def get_heatmap(self,image,bboxes,threshold=2):
 		heat_map = np.zeros((image.shape[0],image.shape[1]))
 		for bbox in bboxes:
 			heat_map[bbox[0][1]:bbox[1][1], bbox[0][0]:bbox[1][0]]+=1
