@@ -4,14 +4,18 @@ import numpy as np
 
 
 class Visualizer(object):
-    RED = (255,0,0)
-    GREEN = (0,255,0)
-    BLUE = (0,0,255)
-    CYAN = (0,255,255)
-    YELLOW = (255,255,0)
-    MAGENTA = (255,0,255)
+    """
+        This class takes care of drawing bounding boxes over images
+    """
+    RED     = (255, 0,  0)
+    GREEN   = (0,   255,0)
+    BLUE    = (0,   0,  255)
+    CYAN    = (0,   255,255)
+    YELLOW  = (255, 255,0)
+    MAGENTA = (255, 0,  255)
 
-    COLORS = [RED,GREEN,BLUE,CYAN,YELLOW,MAGENTA]
+    COLORS  = [RED,GREEN,BLUE,CYAN,YELLOW,MAGENTA]
+    
     def __init__(self):
         self.line_thickness = 1
     
@@ -21,7 +25,11 @@ class Visualizer(object):
             cv2.rectangle(bb_image, bbox[0], bbox[1], 
                             color, self.line_thickness)
         return bb_image
+
     def draw_labeled_bounding_box(self,image,labels):
+        """
+            code used from lessons
+        """
         for car in range(1,labels[1]+1):
             nonzero = (labels[0] == car).nonzero()
             # Identify x and y values of those pixels

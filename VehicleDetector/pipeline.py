@@ -21,9 +21,11 @@ class VehicleDetector(object):
         self.feat = features.FeatureDetector()
         self.clf = classifier.Classifier()
         self.viz = visualizer.Visualizer()
-        self.clf.load_classifier()
 
-        self.probability_threshold = 0.5
+        self.clf.load_classifier()
+        self.data_h.load_scalar()
+
+        self.probability_threshold = 0.6
 
     def prepare_dataset(self):
         """
@@ -85,6 +87,7 @@ class VehicleDetector(object):
         # Compute the number of windows in x/y
         nx_buffer = np.int(xy_window[0]*(xy_overlap[0]))
         ny_buffer = np.int(xy_window[1]*(xy_overlap[1]))
+        
         nx_windows = np.int((xspan-nx_buffer)/nx_pix_per_step) 
         ny_windows = np.int((yspan-ny_buffer)/ny_pix_per_step) 
         # Initialize a list to append window positions to
@@ -106,17 +109,20 @@ class VehicleDetector(object):
         return window_list
 
     def get_windows(self,image):
+        """
+            pre-defined window sizes
+        """
         window_image = np.copy(image)
-
         height, width,_ = window_image.shape
 
         # print(width,height)
-        scale_factors = [(0.4,1.0,0.55,0.8,64),
-                        (0.2,1.0,0.55,0.8,100),
-                        (0.4,1.0,0.55,0.9,120),
+        scale_factors = [
+                        (0.4,1.0,0.55,0.8,64),
+                        (0.2,1.0,0.55,0.8,96),
+                        (0.4,1.0,0.55,0.9,128),
                         (0.2,1.0,0.55,0.9,140),
                         (0.4,1.0,0.55,0.9,160),
-                        (0.3,1.0,0.50,0.9,180)]
+                        (0.3,1.0,0.50,0.9,192)]
 
         windows = list()
         for scale_factor in scale_factors:
@@ -139,7 +145,6 @@ class VehicleDetector(object):
         viz_image = np.copy(image)
         plt.figure()
         windows = self.get_windows(image)
-        # print(windows[0][0])
 
         cells = []
         all_X = []
@@ -156,32 +161,18 @@ class VehicleDetector(object):
                 except cv2.error as e:
                     # print(e)
                     pass
-        # print(len(all_X))
-        # print('-'*80)
         features = np.vstack(all_X).astype(np.float64)
         features = self.data_h.scale_vector(features)
         pred_proba = self.clf.predict(features)
-        # print('-'*80)           
-        # print(len(cells))
         final_bbox = []
         for i,_pred in enumerate(pred_proba):
             if _pred[1] > self.probability_threshold:
-                # print(pred_proba[i])
                 viz_image = self.viz.draw_bounding_box(viz_image,[cells[i]],color=self.viz.GREEN)
                 final_bbox.append(cells[i])
 
-        # plt.imshow(viz_image)
-        # plt.figure()
         heat_map = self.feat.get_heatmap(image, final_bbox)
         labels = label(heat_map)
-        # plt.imshow(heat_map)
-        # plt.figure()
-        # plt.imshow(labels[0], cmap='gray')
         final_img = self.viz.draw_labeled_bounding_box(image,labels)
-        # plt.figure()
-        # plt.imshow(final_img)
-        # print(labels)
-        # plt.show()
         return final_img
 
 

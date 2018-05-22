@@ -11,7 +11,6 @@ class DataHandler(object):
 
     def __init__(self, BASE_PATH="."):
         self.BASE_PATH = BASE_PATH
-        self.X_scaler = pickle.load(open('X_scaler.pkl', 'rb'))
 
     def load_data(self):
         self.test_images = glob.glob("./test_images/*.jpg")
@@ -30,11 +29,15 @@ class DataHandler(object):
 
         X_train, X_test, y_train, y_test = train_test_split(scaled_X, labels,
                                                             test_size=0.2)
-        print('[Training data]{} [Training labels]{}'.format(X_train.shape, y_train.shape))
-        print('[Test data]{} [Test labels]{}'.format(X_test.shape, y_test.shape))
+        print('[Training data]{} [Training labels]{}'.format(X_train.shape, 
+                                                            y_train.shape))
+        print('[Test data]{} [Test labels]{}'.format(X_test.shape, 
+                                                    y_test.shape))
         return (X_train, X_test, y_train, y_test)
 
+    def load_scalar(self):
+        self.X_scaler = pickle.load(open('X_scaler.pkl', 'rb'))
+
     def scale_vector(self,vector):
-        # self.X_scaler = StandardScaler().fit(vector)
         return self.X_scaler.transform(vector)
 
