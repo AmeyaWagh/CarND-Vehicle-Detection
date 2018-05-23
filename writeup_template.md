@@ -35,6 +35,12 @@ The goals / steps of this project are the following:
 <!-- #### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.   -->
 
 <!-- You're reading it! -->
+
+<div style="text-align:center"><img src=./assets/final.gif width="600" height="400"></div>
+
+
+---
+
 ### Code architecture
 ```bash
                                             main.py
@@ -48,6 +54,22 @@ The goals / steps of this project are the following:
                |   data_handler.py  features.py     classifier.py    visualizer.py    |
                |                                                                      |   
                |----------------------------------------------------------------------|
+```
+
+
+to run the code  pipeline, uncomment `process_video` in `main.py`
+```python
+if __name__ == '__main__':
+    # unit_tests()
+    # train_pipeline()
+    process_video() 
+
+```
+
+and execute
+
+```
+python main.py
 ```
 
 
@@ -214,7 +236,7 @@ I used the above mentioned parameter and window sizes to obtain features. I then
 ### Video Implementation
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](https://www.youtube.com/watch?v=epJj0KiRnco&feature=youtu.be)
 
 
 #### 2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.

@@ -67,8 +67,8 @@ def train_pipeline():
 	vehicle_detector.prepare_dataset()
 
 def unit_tests():
-	# test_features()
-	# test_windows()
+	test_features()
+	test_windows()
 	test_car_detection()
 
 def process_video():
@@ -77,6 +77,6 @@ def process_video():
 	processed_video.write_videofile(OUTPUT_FILE, audio=False)
 
 if __name__ == '__main__':
-	unit_tests()
+	# unit_tests()
 	# train_pipeline()
-	# process_video()
+	process_video()
