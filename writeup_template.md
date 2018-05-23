@@ -89,15 +89,31 @@ I then explored different color spaces and different `skimage.hog()` parameters 
 Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`: -->
 
 
-
-
-| CAR             |  NON-CAR |
-|:-------------------------:|:-------------------------:|
-| <img src=./vehicles/GTI_Far/image0000.png width="200" height="200"> | <img src=./non-vehicles/GTI/image1000.png width="200" height="200"> |
-| <img src=./vehicles/GTI_Far/image0001.png width="200" height="200"> | <img src=./non-vehicles/GTI/image1001.png width="200" height="200"> |
-| <img src=./vehicles/GTI_Far/image0002.png width="200" height="200"> | <img src=./non-vehicles/GTI/image1002.png width="200" height="200"> |
-| <img src=./vehicles/GTI_Far/image0003.png width="200" height="200"> | <img src=./non-vehicles/GTI/image1003.png width="200" height="200"> |
-| <img src=./vehicles/GTI_Far/image0004.png width="200" height="200"> | <img src=./non-vehicles/GTI/image1004.png width="200" height="200"> |
+<div style="text-align:center">
+    <span style="text-align:center;">____CAR</span>
+    <span>|</span>
+    <span style="text-align:center;">NON-CAR</span>
+</div>
+<div style="text-align:center">
+    <img src=./vehicles/GTI_Far/image0000.png width="200" height="200">
+    <img src=./non-vehicles/GTI/image1000.png width="200" height="200">
+</div>
+<div style="text-align:center">
+    <img src=./vehicles/GTI_Far/image0001.png width="200" height="200">
+    <img src=./non-vehicles/GTI/image1001.png width="200" height="200">
+</div>
+<div style="text-align:center">
+    <img src=./vehicles/GTI_Far/image0002.png width="200" height="200">
+    <img src=./non-vehicles/GTI/image1002.png width="200" height="200">
+</div>
+<div style="text-align:center">
+    <img src=./vehicles/GTI_Far/image0003.png width="200" height="200">
+    <img src=./non-vehicles/GTI/image1003.png width="200" height="200">
+</div>
+<div style="text-align:center">
+    <img src=./vehicles/GTI_Far/image0004.png width="200" height="200">
+    <img src=./non-vehicles/GTI/image1004.png width="200" height="200">
+</div>
 
 
 
