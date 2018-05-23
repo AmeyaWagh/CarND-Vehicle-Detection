@@ -13,6 +13,10 @@ class DataHandler(object):
         self.BASE_PATH = BASE_PATH
 
     def load_data(self):
+        """
+            using GLOB all the directories are searched for 
+            required images and list of paths are updated
+        """
         self.test_images = glob.glob("./test_images/*.jpg")
         self.vehicles = glob.glob("./vehicles/**/*.png")
         self.non_vehicles = glob.glob("./non-vehicles/**/*.png")
@@ -22,6 +26,10 @@ class DataHandler(object):
         print("[non_vehicles] {}".format(len(self.non_vehicles)))
 
     def prepare_trainable_data(self, _features, labels):
+        """
+            The car and non-car data is loaded here and split into
+            train and test data. The scalar fit during this process is   
+        """
         X_scaler = StandardScaler().fit(_features)
         scaled_X = X_scaler.transform(_features)
 
