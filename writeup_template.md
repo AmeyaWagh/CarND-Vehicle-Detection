@@ -95,24 +95,24 @@ Here is an example using the `YCrCb` color space and HOG parameters of `orientat
     <span style="text-align:center;">NON-CAR</span>
 </div>
 <div style="text-align:center">
-    <img src=./vehicles/GTI_Far/image0000.png width="200" height="200">
-    <img src=./non-vehicles/GTI/image1000.png width="200" height="200">
+    <img src=./assets/image0000.png width="200" height="200">
+    <img src=./assets/image1000.png width="200" height="200">
 </div>
 <div style="text-align:center">
-    <img src=./vehicles/GTI_Far/image0001.png width="200" height="200">
-    <img src=./non-vehicles/GTI/image1001.png width="200" height="200">
+    <img src=./assets/image0001.png width="200" height="200">
+    <img src=./assets/image1001.png width="200" height="200">
 </div>
 <div style="text-align:center">
-    <img src=./vehicles/GTI_Far/image0002.png width="200" height="200">
-    <img src=./non-vehicles/GTI/image1002.png width="200" height="200">
+    <img src=./assets/image0002.png width="200" height="200">
+    <img src=./assets/image1002.png width="200" height="200">
 </div>
 <div style="text-align:center">
-    <img src=./vehicles/GTI_Far/image0003.png width="200" height="200">
-    <img src=./non-vehicles/GTI/image1003.png width="200" height="200">
+    <img src=./assets/image0003.png width="200" height="200">
+    <img src=./assets/image1003.png width="200" height="200">
 </div>
 <div style="text-align:center">
-    <img src=./vehicles/GTI_Far/image0004.png width="200" height="200">
-    <img src=./non-vehicles/GTI/image1004.png width="200" height="200">
+    <img src=./assets/image0004.png width="200" height="200">
+    <img src=./assets/image1004.png width="200" height="200">
 </div>
 
 
