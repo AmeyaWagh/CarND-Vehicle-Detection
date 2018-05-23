@@ -27,12 +27,30 @@ The goals / steps of this project are the following:
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
  -->
----
+
 ### Writeup / README
+
+---
 
 <!-- #### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.   -->
 
 <!-- You're reading it! -->
+### Code architecture
+```bash
+                                            main.py
+                                                |
+                                                |
+                                            pipeline.py
+                                                |                   VehicleDetector
+               |----------------------------------------------------------------------|
+               |   _____________________________|__________________________           |   
+               |   |                    |                |                |           |
+               |   data_handler.py  features.py     classifier.py    visualizer.py    |
+               |                                                                      |   
+               |----------------------------------------------------------------------|
+```
+
+
 
 ### Histogram of Oriented Gradients (HOG)
 
@@ -49,6 +67,8 @@ I then explored different color spaces and different `skimage.hog()` parameters 
 Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`: -->
 
 
+
+
 | CAR             |  NON-CAR |
 |:-------------------------:|:-------------------------:|
 | <img src=./vehicles/GTI_Far/image0000.png width="200" height="200"> | <img src=./non-vehicles/GTI/image1000.png width="200" height="200"> |
@@ -58,33 +78,90 @@ Here is an example using the `YCrCb` color space and HOG parameters of `orientat
 | <img src=./vehicles/GTI_Far/image0004.png width="200" height="200"> | <img src=./non-vehicles/GTI/image1004.png width="200" height="200"> |
 
 
-<img src=./assets/car.png width="400" height="300">
-<img src=./assets/changed_color_space.png width="400" height="300">
+
+---
+
+For every loaded image
+
+<div style="text-align:center"><img src=./assets/car.png width="600" height="400"></div>
+
+The color space of the image is changed using 
+```python
+def convert_color_space(self,image):
+    return cv2.cvtColor(image,self.color_space)
+```
+
+<div style="text-align:center"><img src=./assets/changed_color_space.png width="600" height="400"></div>
+
+and the HOG for each channel is computed and concatenated to form a feature vector
+```python
+ def get_HOG(self,image):
+    """
+        HOG of every channel of given image is compuuted and
+        is concatenated to form one single feature vector
+    """
+    feat_ch1 = hog(image[:,:,0], 
+                        orientations= self.orientations , 
+                        pixels_per_cell= self.pixels_per_cell , 
+                        cells_per_block= self.cells_per_block,
+                        visualise=False)
+    feat_ch2 = hog(image[:,:,1], 
+                        orientations= self.orientations , 
+                        pixels_per_cell= self.pixels_per_cell , 
+                        cells_per_block= self.cells_per_block,
+                        visualise=False)
+    feat_ch3 = hog(image[:,:,2], 
+                        orientations= self.orientations , 
+                        pixels_per_cell= self.pixels_per_cell , 
+                        cells_per_block= self.cells_per_block,
+                        visualise=False)
+    return np.concatenate((feat_ch1, feat_ch2, feat_ch3))
+```
+
+<div style="text-align:center"><img src=./assets/car_hog.png width="600" height="400"></div>
+
+The feature extraction and preprocessing part is handled by `FeatureDetector` class defined in `features.py`
 <!-- ![alt text][image2] -->
 
 #### 2. Explain how you settled on your final choice of HOG parameters.
 
 The parameter of HOG were finalized using trial and error method
 ```python
-self.color_space = cv2.COLOR_RGB2HSV
-self.orientations = 8
-self.pixels_per_cell = (12,12)
-self.cells_per_block = (2,2)
-self.image_size = (32,32)
-self.rgb_image_size = (32,32,3)
-self.no_of_bins = 32
+        self.color_space = cv2.COLOR_RGB2YCrCb
+        self.orientations = 16
+        self.pixels_per_cell = (12,12)
+        self.cells_per_block = (2,2)
+        self.image_size = (32,32)
+        self.color_feat_size = (64,64)
+        self.no_of_bins = 32
+
+        self.color_features = False
+        self.spatial_features = False
+        self.HOG_features = True
 ```
+
+It was observed that the color_features and spatial_features don't add much of a significance and rather slow down the computation. Thus only HOG was used
 
 #### 3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
+I found that Random forest classifier gave better accuracy and process time than SVM classifier so I used `RandomForestClassifier` from `sklearn.ensemble` 
 ```
-[LibSVM][accuracy] 0.9921171171171171
-[INFO] classifier saved
+[accuracy] 0.9583333333333334
 
 ```
 
-I trained a linear SVM using...
-<img src=./assets/feature_vect.png width="300" height="300">
+The following is the feature vector which was used to train the classifier. I created a classifier class which had methods :
+```python
+def train(self, X_train, y_train, X_test, y_test):
+    ...
+def predict(self, inputX):
+    ...
+def save_classifier(self):
+    ...
+def load_classifier(self):
+    ...
+```
+<div style="text-align:center"><img src=./assets/feature_vect.png width="300" height="300"></div>
 
 
 ### Sliding Window Search
@@ -95,12 +172,12 @@ I trained a linear SVM using...
 
 ![alt text][image3] -->
 ```python
-scale_factors = [(0.2,1.0,0.55,0.8,64),
-                (0.2,1.0,0.55,0.8,100),
-                (0.2,1.0,0.55,0.9,120),
-                (0.2,1.0,0.55,0.9,140),
-                (0.2,1.0,0.55,0.9,160),
-                (0.05,1.0,0.50,0.9,180)]
+scale_factors = [(0.4,1.0,0.55,0.8,64),
+                (0.4,1.0,0.55,0.8,96),
+                (0.4,1.0,0.55,0.9,128),
+                (0.4,1.0,0.55,0.9,140),
+                (0.4,1.0,0.55,0.9,160),
+                (0.4,1.0,0.50,0.9,192)]
 ```
 
 ```python
@@ -115,19 +192,23 @@ window_1 = self.slide_window(window_image,
                             xy_overlap=(0.5, 0.5))
 ```
 
-<img src=./assets/window_1.png width="800" height="500">
-<img src=./assets/window_2.png width="800" height="500">
-<img src=./assets/window_3.png width="800" height="500">
+Following is the result of sliding windows on the image
+
+<div style="text-align:center"><img src=./assets/window_1.png width="800" height="500"></div>
+<div style="text-align:center"><img src=./assets/window_2.png width="800" height="500"></div>
+<div style="text-align:center"><img src=./assets/window_3.png width="800" height="500"></div>
 
 
 
 #### 2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
-<!-- Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
+I used the above mentioned parameter and window sizes to obtain features. I then created a headmap of the bounding boxes predicted by the classifier, thresholded it and then created blobs to find the final bounding boxes.
 
-![alt text][image4] -->
+<div style="text-align:center"><img src=./assets/multiple_detected_boxes.png width="1200" height="600"></div>
+<div style="text-align:center"><img src=./assets/cars_heatmap.png width="900" height="700"></div>
+<div style="text-align:center"><img src=./assets/labels.png width="900" height="700"></div>
+<div style="text-align:center"><img src=./assets/final_car.png width="900" height="700"></div>
 
-<img src=./assets/multiple_detected_boxes.png width="1200" height="600">
 ---
 
 ### Video Implementation
@@ -138,24 +219,41 @@ Here's a [link to my video result](./project_video.mp4)
 
 #### 2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
 
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
-
-Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
-
-### Here are six frames and their corresponding heatmaps:
-
-<!-- ![alt text][image5] -->
-<!-- <img src=./assets/cars_det.png width="900" height="600"> -->
-<img src=./assets/multiple_detected_boxes.png width="1200" height="600">
-<img src=./assets/cars_heatmap.png width="900" height="600">
+I took the predictions which had probability above a given threshold and created a heatmap from their bounding boxes. I then made the heatmap binary thresholding it. To find blobs I used `scipy.ndimage.measurements.label()` . To track the object and reduce affect of false positives, I stored the previous heatmap and added a scaled version of it to the next heatmap and increased the heapmap threshold. thus the heat in the area where previously car was detected would be higher than original and can easily be thresholded. 
 
 ### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
-<!-- ![alt text][image6] -->
-<img src=./assets/labels.png width="900" height="600">
 
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
-<!-- ![alt text][image7] -->
-<img src=./assets/final_car.png width="900" height="600">
+
+<div style="text-align:center">
+    <img src=./assets/f1.png width="250" height="250">
+    <img src=./assets/h1.png width="250" height="250">
+    <img src=./assets/v1.png width="250" height="250">
+</div>
+<div style="text-align:center">
+    <img src=./assets/f2.png width="250" height="250">
+    <img src=./assets/h2.png width="250" height="250">
+    <img src=./assets/v2.png width="250" height="250">
+</div>
+<div style="text-align:center">
+    <img src=./assets/f3.png width="250" height="250">
+    <img src=./assets/h3.png width="250" height="250">
+    <img src=./assets/v3.png width="250" height="250">
+</div>
+<div style="text-align:center">
+    <img src=./assets/f4.png width="250" height="250">
+    <img src=./assets/h4.png width="250" height="250">
+    <img src=./assets/v4.png width="250" height="250">
+</div>
+<div style="text-align:center">
+    <img src=./assets/f5.png width="250" height="250">
+    <img src=./assets/h5.png width="250" height="250">
+    <img src=./assets/v5.png width="250" height="250">
+</div>
+<div style="text-align:center">
+    <img src=./assets/f6.png width="250" height="250">
+    <img src=./assets/h6.png width="250" height="250">
+    <img src=./assets/v6.png width="250" height="250">
+</div>
 
 
 

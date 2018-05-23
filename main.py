@@ -22,14 +22,20 @@ feat = features.FeatureDetector()
 viz = visualizer.Visualizer()
 
 def test_features():
+	from skimage.feature import hog
 	img = cv2.imread(data_h.vehicles[0])
 	plt.figure()
 	plt.imshow(img)
 	plt.figure()
 	plt.imshow(feat.convert_color_space(img))
 	plt.figure()
-	# plt.plot(feat.get_HOG(img)[0])
-	plt.plot(feat.get_features(img))
+	feat_ch1,out_img = hog(img[:,:,0], 
+                            orientations= 16 , 
+                            pixels_per_cell= (12,12) , 
+                            cells_per_block= (2,2),
+                            visualise=True)
+	plt.imshow(out_img)
+	# plt.plot(feat.get_features(img))
 	plt.show()
 
 def test_windows():
@@ -47,9 +53,14 @@ def test_windows():
 def test_car_detection():
 	for img_file in data_h.test_images:
 		img = cv2.imread(img_file)
-		final_img = vehicle_detector.process_image(img)		
+		final_img,heat_map,viz_img = vehicle_detector.process_image(img,visualization=True)		
 
+		plt.figure()
 		plt.imshow(final_img)
+		plt.figure()
+		plt.imshow(heat_map,cmap='gray')
+		plt.figure()
+		plt.imshow(viz_img)
 		plt.show()
 
 def train_pipeline():
@@ -66,6 +77,6 @@ def process_video():
 	processed_video.write_videofile(OUTPUT_FILE, audio=False)
 
 if __name__ == '__main__':
-	# unit_tests()
+	unit_tests()
 	# train_pipeline()
-	process_video()
+	# process_video()

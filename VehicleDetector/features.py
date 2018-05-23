@@ -103,8 +103,10 @@ class FeatureDetector(object):
         heat_map = np.zeros((image.shape[0],image.shape[1]))
         for bbox in bboxes:
             heat_map[bbox[0][1]:bbox[1][1], bbox[0][0]:bbox[1][0]]+=1
+        
+        # adding previous heatmap is like tracking the object
         if self.old_heatmap is not None:
-            heat_map += threshold*self.old_heatmap
+            heat_map += 0.99*threshold*self.old_heatmap
         heat_map[heat_map <= threshold] = 0
         heat_map[heat_map > threshold] = 1
         self.old_heatmap = heat_map

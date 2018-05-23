@@ -140,7 +140,7 @@ class VehicleDetector(object):
 
         return windows
 
-    def process_image(self,image):
+    def process_image(self,image,visualization=None):
         process_image = np.copy(image)
         viz_image = np.copy(image)
         plt.figure()
@@ -173,6 +173,9 @@ class VehicleDetector(object):
         heat_map = self.feat.get_heatmap(image, final_bbox)
         labels = label(heat_map)
         final_img = self.viz.draw_labeled_bounding_box(image,labels)
+        
+        if visualization is not None:
+            return final_img,heat_map,viz_image
         return final_img
 
 
